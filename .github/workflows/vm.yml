@@ -6,41 +6,49 @@ on:
 jobs:
   vm:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 360
 
     steps:
+      - name: Set up job
+        run: echo "Iniciando configuração"
+
       - name: Iniciando VM
         run: |
-          echo "🚀 Biersack VM V8 iniciada"
-          uname -a
-          free -h
-          df -h
+          sudo apt update
 
       - name: Instalando desktop remoto
         run: |
-          sudo apt update
-          sudo apt install -y xfce4 xfce4-goodies xrdp curl
-          sudo useradd -m runner || true
+          sudo apt install -y xfce4 xfce4-goodies xrdp wget curl
+
+          sudo useradd -m -s /bin/bash runner || true
           echo "runner:123456" | sudo chpasswd
+          sudo usermod -aG sudo runner
+
           echo "xfce4-session" > /home/runner/.xsession
           sudo chown runner:runner /home/runner/.xsession
+
           sudo systemctl enable xrdp
           sudo systemctl restart xrdp
 
       - name: Mostrar acesso remoto
         run: |
-          echo "====================================="
-          echo "🖥️ BIERSACK VM V8"
-          echo "====================================="
+          echo "======================================"
+          echo "🖥️ BIERSACK VM - REMOTE DESKTOP"
+          echo "======================================"
+          echo ""
           echo "Usuário: runner"
           echo "Senha: 123456"
           echo "RDP: porta 3389"
           echo ""
           echo "IP DA VM:"
-          curl -s ifconfig.me
+          curl ifconfig.me
           echo ""
-          echo "VM online por 4 horas"
+          echo "======================================"
 
       - name: Manter VM ligada
         run: |
-          sleep 14400
+          echo "VM ativa por até 6 horas"
+          while true; do
+            echo "VM online..."
+            sleep 300
+          done
