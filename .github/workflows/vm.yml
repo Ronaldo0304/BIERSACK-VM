@@ -11,30 +11,36 @@ jobs:
     steps:
       - name: Iniciando VM
         run: |
-          echo "======================================"
-          echo "🚀 Biersack VM V2 iniciada"
-          echo "======================================"
-          echo ""
-          echo "🖥️ SISTEMA:"
+          echo "🚀 Biersack VM iniciada"
           uname -a
-          echo ""
-          echo "⚙️ CPU:"
           lscpu
-          echo ""
-          echo "🧠 MEMÓRIA RAM:"
           free -h
-          echo ""
-          echo "💾 DISCO:"
           df -h
-          echo ""
-          echo "✅ VM iniciada com sucesso"
 
-      - name: Instalando acesso remoto
+      - name: Instalando Desktop Remoto
         run: |
           sudo apt update
-          sudo apt install -y tmate
+          sudo apt install -y xfce4 xfce4-goodies xrdp tmate
+          sudo systemctl enable xrdp
+          sudo systemctl start xrdp
+          echo "runner:123456" | sudo chpasswd
 
-      - name: Criar terminal remoto
+      - name: Criar acesso remoto
+        run: |
+          echo "====================================="
+          echo "🖥️ BIERSACK VM - REMOTE DESKTOP"
+          echo "====================================="
+          echo "Usuário: runner"
+          echo "Senha: 123456"
+          echo "RDP ativo na porta 3389"
+          echo ""
+          echo "Terminal SSH temporário:"
+          tmate -S /tmp/tmate.sock new-session -d
+          sleep 5
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+          echo ""
+          echo "VM online por 4 horas"
+          sleep 14400      - name: Criar terminal remoto
         run: |
           echo ""
           echo "======================================"
