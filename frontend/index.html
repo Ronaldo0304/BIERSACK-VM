@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIERSACK VM</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside>
+    <h1>BIERSACK VM</h1>
+    <span>Cloud Control Center</span>
+    <button>Dashboard</button>
+    <button>Minhas VMs</button>
+    <button>Criar VM</button>
+    <button>Terminal</button>
+    <button>Logs</button>
+    <button>Histórico</button>
+  </aside>
+
+  <main>
+    <header>
+      <h2>Olá, Ronaldo 👋</h2>
+      <p>Gerencie e monitore sua VM em tempo real</p>
+    </header>
+
+    <section class="cards">
+      <div class="card"><p>VM Ativa</p><h3>1</h3></div>
+      <div class="card"><p>Status</p><h3 class="online">ONLINE</h3></div>
+      <div class="card"><p>Tempo restante</p><h3 id="timer">4h 00m</h3></div>
+      <div class="card"><p>CPU</p><h3 id="cpu">21%</h3></div>
+    </section>
+
+    <section class="panel">
+      <h2>BIERSACK VM #01</h2>
+      <p>Ubuntu 22.04 LTS</p>
+      <div class="status">● ONLINE</div>
+
+      <div class="bars">
+        <label>CPU <span>21%</span></label><div><b style="width:21%"></b></div>
+        <label>RAM <span>2.8 / 8GB</span></label><div><b style="width:35%"></b></div>
+        <label>DISCO <span>4 / 14GB</span></label><div><b style="width:28%"></b></div>
+      </div>
+
+      <div class="actions">
+        <button>Abrir Terminal</button>
+        <button>Abrir Navegador</button>
+        <button>Reiniciar</button>
+        <button class="danger">Encerrar</button>
+      </div>
+    </section>
+
+    <section class="logs">
+      <h3>Terminal Remoto</h3>
+      <pre>$ Conectado ao servidor...
+$ Sistema: Ubuntu 22.04
+$ Usuário: runner
+$ Status: VM online</pre>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
