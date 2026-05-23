@@ -17,13 +17,13 @@ jobs:
           free -h
           df -h
 
-      - name: Instalando Desktop Remoto
+      - name: Instalando desktop remoto
         run: |
           sudo apt update
           sudo apt install -y xfce4 xfce4-goodies xrdp tmate
+          echo "runner:123456" | sudo chpasswd
           sudo systemctl enable xrdp
           sudo systemctl start xrdp
-          echo "runner:123456" | sudo chpasswd
 
       - name: Criar acesso remoto
         run: |
@@ -32,46 +32,13 @@ jobs:
           echo "====================================="
           echo "Usuário: runner"
           echo "Senha: 123456"
-          echo "RDP ativo na porta 3389"
+          echo "RDP: porta 3389"
           echo ""
-          echo "Terminal SSH temporário:"
+          echo "Terminal remoto:"
           tmate -S /tmp/tmate.sock new-session -d
-          sleep 5
+          sleep 8
           tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
           echo ""
           echo "VM online por 4 horas"
-          sleep 14400      - name: Criar terminal remoto
-        run: |
-          echo ""
-          echo "======================================"
-          echo "🌐 Biersack VM - TERMINAL REMOTO"
-          echo "======================================"
-          echo ""
-          echo "⏳ Gerando acesso remoto..."
-          echo ""
-
-          tmate -S /tmp/tmate.sock new-session -d
-          sleep 15
-
-          echo "======================================"
-          echo "🔑 COPIE O SSH ABAIXO PARA O TERMIUS"
-          echo "======================================"
-
-          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
-
-          echo ""
-          echo "🌍 ACESSO PELO NAVEGADOR:"
-          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
-
-          echo ""
-          echo "🕒 TEMPO DA VM: 4 HORAS"
-          echo "⚡ STATUS: ONLINE"
-          echo ""
-
-          for i in $(seq 1 240); do
-            echo "⏱️ VM ONLINE - $i minuto(s)"
-            sleep 60
-          done
-
-          echo ""
-          echo "🔴 Biersack VM encerrada"
+          sleep 14400
