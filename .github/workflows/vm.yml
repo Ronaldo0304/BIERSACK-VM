@@ -41,4 +41,3 @@ jobs:
           tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
           echo ""
           echo "VM online por 4 horas"
-          sleep 14400
