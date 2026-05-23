@@ -26,3 +26,4 @@ jobs:
           echo "VM rodando..."
           sleep 14400
           echo "VM finalizada"
+# update
