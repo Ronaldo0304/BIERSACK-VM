@@ -1,4 +1,4 @@
-name: Biersack VM V8
+name: Biersack VM V9
 
 on:
   workflow_dispatch:
@@ -10,45 +10,52 @@ jobs:
 
     steps:
       - name: Set up job
-        run: echo "Iniciando configuração"
+        run: |
+          echo "Iniciando VM"
 
-      - name: Iniciando VM
+      - name: Instalar desktop remoto
         run: |
           sudo apt update
+          sudo apt install -y xfce4 xfce4-goodies xrdp wget unzip
 
-      - name: Instalando desktop remoto
-        run: |
-          sudo apt install -y xfce4 xfce4-goodies xrdp wget curl
-
-          sudo useradd -m -s /bin/bash runner || true
+          sudo useradd -m runner || true
           echo "runner:123456" | sudo chpasswd
           sudo usermod -aG sudo runner
 
-          echo "xfce4-session" > /home/runner/.xsession
+          echo "startxfce4" > /home/runner/.xsession
           sudo chown runner:runner /home/runner/.xsession
 
           sudo systemctl enable xrdp
           sudo systemctl restart xrdp
 
-      - name: Mostrar acesso remoto
+      - name: Instalar ngrok
         run: |
-          echo "======================================"
-          echo "🖥️ BIERSACK VM - REMOTE DESKTOP"
-          echo "======================================"
-          echo ""
+          wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+          tar -xvzf ngrok-v3-stable-linux-amd64.tgz
+          chmod +x ngrok
+
+      - name: Configurar ngrok
+        env:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        run: |
+          ./ngrok config add-authtoken $NGROK_AUTH_TOKEN
+
+      - name: Abrir RDP
+        run: |
+          nohup ./ngrok tcp 3389 > ngrok.log &
+          sleep 10
+
+          echo "==========================="
+          echo "🚀 BIERSACK VM V9"
           echo "Usuário: runner"
           echo "Senha: 123456"
           echo "RDP: porta 3389"
-          echo ""
-          echo "IP DA VM:"
-          curl ifconfig.me
-          echo ""
-          echo "======================================"
+          echo "==========================="
 
-      - name: Manter VM ligada
+          curl -s http://127.0.0.1:4040/api/tunnels > tunnel.json
+          cat tunnel.json
+
+      - name: Manter VM online
         run: |
-          echo "VM ativa por até 6 horas"
-          while true; do
-            echo "VM online..."
-            sleep 300
-          done
+          echo "VM online por 6 horas"
+          sleep 21600
