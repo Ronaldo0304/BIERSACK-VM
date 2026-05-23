@@ -12,11 +12,9 @@ jobs:
       - name: Configurar RDP
         shell: powershell
         run: |
-          net user administrator 123456
-          net user administrator /active:yes
-
+          net user runner "R0n@ldo_VM#2026" /add
+          net localgroup administrators runner /add
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
-
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
       - name: Baixar ngrok
@@ -36,10 +34,8 @@ jobs:
         shell: powershell
         run: |
           Start-Process .\ngrok.exe -ArgumentList "tcp 3389"
-
           Start-Sleep -Seconds 15
-
-          Invoke-RestMethod http://127.0.0.1:4040/api/tunnels
+          Invoke-RestMethod http://127.0.0.1:4040/api/tunnels | ConvertTo-Json -Depth 5
 
       - name: Manter Windows online
         shell: powershell
