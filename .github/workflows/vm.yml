@@ -1,0 +1,28 @@
+name: BIERSACK VM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  vm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - name: Iniciando VM
+        run: |
+          echo "BIERSACK VM iniciada"
+          echo "Sistema:"
+          uname -a
+          echo "CPU:"
+          lscpu
+          echo "RAM:"
+          free -h
+          echo "DISCO:"
+          df -h
+
+      - name: VM Online 4 horas
+        run: |
+          echo "VM rodando..."
+          sleep 14400
+          echo "VM finalizada"
