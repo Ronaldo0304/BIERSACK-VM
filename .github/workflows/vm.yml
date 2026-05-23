@@ -1,61 +1,40 @@
-name: Biersack VM V9
+name: Biersack Windows RDP
 
 on:
   workflow_dispatch:
 
 jobs:
-  vm:
-    runs-on: ubuntu-latest
+  rdp:
+    runs-on: windows-latest
     timeout-minutes: 360
 
     steps:
-      - name: Set up job
+      - name: Configurar usuário e RDP
         run: |
-          echo "Iniciando VM"
+          net user runner 123456
+          Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-      - name: Instalar desktop remoto
+      - name: Baixar ngrok
         run: |
-          sudo apt update
-          sudo apt install -y xfce4 xfce4-goodies xrdp wget unzip
-
-          sudo useradd -m runner || true
-          echo "runner:123456" | sudo chpasswd
-          sudo usermod -aG sudo runner
-
-          echo "startxfce4" > /home/runner/.xsession
-          sudo chown runner:runner /home/runner/.xsession
-
-          sudo systemctl enable xrdp
-          sudo systemctl restart xrdp
-
-      - name: Instalar ngrok
-        run: |
-          wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-          tar -xvzf ngrok-v3-stable-linux-amd64.tgz
-          chmod +x ngrok
+          Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
+          Expand-Archive ngrok.zip -DestinationPath .
 
       - name: Configurar ngrok
         env:
           NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
         run: |
-          ./ngrok config add-authtoken $NGROK_AUTH_TOKEN
+          .\ngrok.exe config add-authtoken $env:NGROK_AUTH_TOKEN
 
-      - name: Abrir RDP
+      - name: Abrir RDP com ngrok
         run: |
-          nohup ./ngrok tcp 3389 > ngrok.log &
-          sleep 10
+          Start-Process -FilePath ".\ngrok.exe" -ArgumentList "tcp 3389"
+          Start-Sleep -Seconds 10
+          Invoke-RestMethod http://127.0.0.1:4040/api/tunnels | ConvertTo-Json -Depth 5
 
-          echo "==========================="
-          echo "🚀 BIERSACK VM V9"
-          echo "Usuário: runner"
-          echo "Senha: 123456"
-          echo "RDP: porta 3389"
-          echo "==========================="
-
-          curl -s http://127.0.0.1:4040/api/tunnels > tunnel.json
-          cat tunnel.json
-
-      - name: Manter VM online
+      - name: Manter Windows online
         run: |
-          echo "VM online por 6 horas"
-          sleep 21600
+          while ($true) {
+            Write-Host "Windows online..."
+            Start-Sleep -Seconds 300
+          }
