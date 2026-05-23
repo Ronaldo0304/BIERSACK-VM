@@ -12,16 +12,17 @@ jobs:
       - name: Configurar RDP
         shell: powershell
         run: |
-          net user runner "R0n@ldo_VM#2026" /add
+          net user runner "R0n@2026" /add /Y
           net localgroup administrators runner /add
+          net localgroup "Remote Desktop Users" runner /add
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
       - name: Baixar ngrok
         shell: powershell
         run: |
-          Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
-          Expand-Archive ngrok.zip -DestinationPath .
+          Invoke-WebRequest "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile "ngrok.zip"
+          Expand-Archive "ngrok.zip" -DestinationPath "." -Force
 
       - name: Configurar ngrok
         shell: powershell
@@ -33,9 +34,9 @@ jobs:
       - name: Abrir RDP
         shell: powershell
         run: |
-          Start-Process .\ngrok.exe -ArgumentList "tcp 3389"
+          Start-Process -FilePath ".\ngrok.exe" -ArgumentList "tcp 3389"
           Start-Sleep -Seconds 15
-          Invoke-RestMethod http://127.0.0.1:4040/api/tunnels | ConvertTo-Json -Depth 5
+          Invoke-RestMethod "http://127.0.0.1:4040/api/tunnels" | ConvertTo-Json -Depth 5
 
       - name: Manter Windows online
         shell: powershell
