@@ -1,4 +1,4 @@
-name: BIERSACK VM
+name: Biersack VM V2
 
 on:
   workflow_dispatch:
@@ -11,19 +11,61 @@ jobs:
     steps:
       - name: Iniciando VM
         run: |
-          echo "BIERSACK VM iniciada"
-          echo "Sistema:"
+          echo "======================================"
+          echo "🚀 Biersack VM V2 iniciada"
+          echo "======================================"
+          echo ""
+          echo "🖥️ SISTEMA:"
           uname -a
-          echo "CPU:"
+          echo ""
+          echo "⚙️ CPU:"
           lscpu
-          echo "RAM:"
+          echo ""
+          echo "🧠 MEMÓRIA RAM:"
           free -h
-          echo "DISCO:"
+          echo ""
+          echo "💾 DISCO:"
           df -h
+          echo ""
+          echo "✅ VM iniciada com sucesso"
 
-      - name: VM Online 4 horas
+      - name: Instalando acesso remoto
         run: |
-          echo "VM rodando..."
-          sleep 14400
-          echo "VM finalizada"
-# update
+          sudo apt update
+          sudo apt install -y tmate
+
+      - name: Criar terminal remoto
+        run: |
+          echo ""
+          echo "======================================"
+          echo "🌐 Biersack VM - TERMINAL REMOTO"
+          echo "======================================"
+          echo ""
+          echo "⏳ Gerando acesso remoto..."
+          echo ""
+
+          tmate -S /tmp/tmate.sock new-session -d
+          sleep 15
+
+          echo "======================================"
+          echo "🔑 COPIE O SSH ABAIXO PARA O TERMIUS"
+          echo "======================================"
+
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+
+          echo ""
+          echo "🌍 ACESSO PELO NAVEGADOR:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
+
+          echo ""
+          echo "🕒 TEMPO DA VM: 4 HORAS"
+          echo "⚡ STATUS: ONLINE"
+          echo ""
+
+          for i in $(seq 1 240); do
+            echo "⏱️ VM ONLINE - $i minuto(s)"
+            sleep 60
+          done
+
+          echo ""
+          echo "🔴 Biersack VM encerrada"
